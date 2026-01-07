@@ -17,24 +17,31 @@ export const auth = async (req, res, next) => {
       return res.status(401).json({ error: "Invalid token" });
     }
 
-    // 🔑 FETCH PROFILE (THIS WAS MISSING)
+    // Fetch profile
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("gym_id, role")
       .eq("id", user.id)
       .single();
 
-    if (profileError || !profile?.gym_id) {
+    if (profileError || !profile?.role) {
       return res.status(403).json({
-        error: "Profile or gym not configured for this user",
+        error: "Profile not configured for this user",
       });
     }
 
-    // ✅ ATTACH FULL CONTEXT
+    // 🔑 ONLY members require gym
+    if (profile.role !== "ADMIN" && !profile.gym_id) {
+      return res.status(403).json({
+        error: "Gym not configured for this user",
+      });
+    }
+
+    // Attach context
     req.user = {
       id: user.id,
       role: profile.role,
-      gym_id: profile.gym_id, // 🔥 NEVER undefined now
+      gym_id: profile.gym_id || null, // admin → null
     };
 
     next();
