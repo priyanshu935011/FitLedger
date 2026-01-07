@@ -26,6 +26,7 @@ export const createGym = async (req, res) => {
       plan,
       billing_cycle,
       subscription_start_date,
+      password,
     } = req.body;
 
     // -------------------------------
@@ -36,6 +37,11 @@ export const createGym = async (req, res) => {
 
     if (!billing_cycle || !["MONTHLY", "YEARLY"].includes(billing_cycle)) {
       return res.status(400).json({ error: "Invalid billing cycle" });
+    }
+    if (!password || password.length < 6) {
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 6 characters" });
     }
 
     if (!plan) {
@@ -82,6 +88,7 @@ export const createGym = async (req, res) => {
     const { data: authUser, error: authError } =
       await supabase.auth.admin.createUser({
         email: owner_email,
+        password, // 👈 PASSWORD SAVED HERE
         email_confirm: true,
       });
 
@@ -105,39 +112,11 @@ export const createGym = async (req, res) => {
     }
 
     // -------------------------------
-    // 6. Generate secure password setup link
-    // -------------------------------
-    const { data: recovery, error: linkError } =
-      await supabase.auth.admin.generateLink({
-        type: "recovery",
-        email: owner_email,
-        options: {
-          redirectTo: `${process.env.FRONTEND_URL}/set-password`,
-        },
-      });
-
-    if (linkError) {
-      console.error(linkError);
-      return res
-        .status(400)
-        .json({ error: "Failed to generate password link" });
-    }
-
-    // -------------------------------
-    // 7. Send email via EmailJS
-    // -------------------------------
-    await sendPasswordSetupEmail({
-      to_email: owner_email,
-      to_name: owner_name,
-      action_link: recovery.properties.action_link,
-    });
-
-    // -------------------------------
     // 8. Final response
     // -------------------------------
     return res.json({
       success: true,
-      message: "Gym created and invite email sent",
+      message: "Gym created",
     });
   } catch (err) {
     console.error("createGym error:", err);
