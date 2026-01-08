@@ -3,12 +3,12 @@ import { createPayment } from "./payment.service.js";
 
 export const createMember = async (gym_id, data) => {
   const payload = {
-    full_name: data.name,
+    full_name: data.full_name,
     phone: data.phone,
-    membership_type: data.membershipType,
-    membership_price: data.amount,
-    membership_start: data.startDate,
-    membership_end: data.calculatedExpiry,
+    membership_type: data.membership_type,
+    membership_price: data.membership_price,
+    membership_start: data.membership_start,
+    membership_end: data.membership_end,
   };
   const { data: member, error } = await supabase
     .from("members")
