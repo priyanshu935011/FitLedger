@@ -8,7 +8,7 @@ export const createMember = async (gym_id, data) => {
     membership_type: data.membershipType,
     membership_price: data.amount,
     membership_start: data.startDate,
-    membership_end: datacalculatedExpiry,
+    membership_end: data.calculatedExpiry,
   };
   const { data: member, error } = await supabase
     .from("members")
