@@ -17,8 +17,8 @@ export const createMember = async (gym_id, data) => {
     .single();
   if (await member) {
     const payload = {
-      member_id: member.member_id,
-      amount: member.amount,
+      member_id: member.id,
+      amount: member.membership_price,
       payment_mode: data.mode,
       purpose: "Subscription Started",
     };
