@@ -7,7 +7,7 @@ export const createMember = async (gym_id, data) => {
     .insert([{ ...data, gym_id }])
     .select()
     .single();
-  if (data) {
+  if (member) {
     const payload = {
       member_id: member.member_id,
       amount: member.amount,
