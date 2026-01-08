@@ -2,9 +2,17 @@ import { supabase } from "../config/supabase.js";
 import { createPayment } from "./payment.service.js";
 
 export const createMember = async (gym_id, data) => {
+  const payload = {
+    full_name: data.name,
+    phone: data.phone,
+    membership_type: data.membershipType,
+    membership_price: data.amount,
+    membership_start: data.startDate,
+    membership_end: datacalculatedExpiry,
+  };
   const { data: member, error } = await supabase
     .from("members")
-    .insert([{ ...data, gym_id }])
+    .insert([{ ...payload, gym_id }])
     .select()
     .single();
   if (await member) {
