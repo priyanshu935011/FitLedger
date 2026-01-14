@@ -7,5 +7,5 @@ const router = express.Router();
 
 router.post("/", auth, member, controller.createPayment);
 router.get("/recent", auth, member, controller.getRecentPayments);
-
+router.get("/pay/:id", auth, member, controller.delParticularPayment);
 export default router;

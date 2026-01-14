@@ -33,6 +33,7 @@ export const getMembers = async (gym_id) => {
     .from("members")
     .select("*")
     .eq("gym_id", gym_id)
+    .neq("status", "archived")
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -67,7 +68,7 @@ export const updateMember = async (gym_id, id, updates) => {
 export const deleteMember = async (gym_id, id) => {
   const { error } = await supabase
     .from("members")
-    .delete()
+    .update({ status: "archived" })
     .eq("gym_id", gym_id)
     .eq("id", id);
 

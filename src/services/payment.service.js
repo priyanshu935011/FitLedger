@@ -22,3 +22,14 @@ export const getRecentPayments = async (gym_id) => {
   if (error) throw error;
   return data;
 };
+
+export const getParticularPayment = async (id) => {
+  const { data, error } = await supabase
+    .from("payments")
+    .select("*,members(full_name)")
+    .eq("member_id", id)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+};

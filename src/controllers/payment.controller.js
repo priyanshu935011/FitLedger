@@ -17,3 +17,12 @@ export const getRecentPayments = async (req, res, next) => {
     next(err);
   }
 };
+export const delParticularPayment = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const payments = await service.getParticularPayment(id);
+    res.json(payments);
+  } catch (err) {
+    throw err;
+  }
+};

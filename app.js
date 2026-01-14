@@ -15,6 +15,7 @@ import paymentRoutes from "./src/routes/payment.routes.js";
 import DashboardRoutes from "./src/routes/dashboard.route.js";
 import reportsRoutes from "./src/routes/reports.routes.js";
 import membershipPlansRoutes from "./src/routes/membershipPlans.routes.js";
+import gymProfileRoutes from "./src/routes/gymProfiles.routes.js";
 const app = express();
 
 /* -------------------------
@@ -45,7 +46,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/dashboard", DashboardRoutes);
 app.use("/api/reports", reportsRoutes);
 app.use("/api/membership-plans", membershipPlansRoutes);
-
+app.use("/api/gymProfile", gymProfileRoutes);
 /* -------------------------
    404 Handler
 -------------------------- */
