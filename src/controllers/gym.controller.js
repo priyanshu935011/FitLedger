@@ -38,6 +38,7 @@ export const createGym = async (req, res) => {
     if (!billing_cycle || !["MONTHLY", "YEARLY"].includes(billing_cycle)) {
       return res.status(400).json({ error: "Invalid billing cycle" });
     }
+
     if (!password || password.length < 6) {
       return res
         .status(400)
@@ -57,7 +58,7 @@ export const createGym = async (req, res) => {
     );
 
     // -------------------------------
-    // 3. Create gym record
+    // 3. Create gym
     // -------------------------------
     const { data: gym, error: gymError } = await supabase
       .from("gyms")
@@ -83,12 +84,12 @@ export const createGym = async (req, res) => {
     }
 
     // -------------------------------
-    // 4. Create auth user for gym owner
+    // 4. Create auth user
     // -------------------------------
     const { data: authUser, error: authError } =
       await supabase.auth.admin.createUser({
         email: owner_email,
-        password, // 👈 PASSWORD SAVED HERE
+        password,
         email_confirm: true,
       });
 
@@ -98,7 +99,7 @@ export const createGym = async (req, res) => {
     }
 
     // -------------------------------
-    // 5. Create profile (role = MEMBER)
+    // 5. Create profile
     // -------------------------------
     const { error: profileError } = await supabase.from("profiles").insert({
       id: authUser.user.id,
@@ -112,11 +113,49 @@ export const createGym = async (req, res) => {
     }
 
     // -------------------------------
-    // 8. Final response
+    // 6. INIT GYM RELATED TABLES ✅
+    // -------------------------------
+
+    // 6.1 gym_profiles (1:1)
+    await supabase.from("gym_profiles").insert({
+      gym_id: gym.id,
+      address_line1: "",
+      city: city,
+    });
+
+    // 6.2 operating hours (defaults)
+    await supabase.from("gym_operating_hours").insert([
+      {
+        gym_id: gym.id,
+        day_range: "Monday - Friday",
+        open_time: "06:00",
+        close_time: "22:00",
+      },
+      {
+        gym_id: gym.id,
+        day_range: "Saturday",
+        open_time: "07:00",
+        close_time: "21:00",
+      },
+      {
+        gym_id: gym.id,
+        day_range: "Sunday",
+        open_time: "08:00",
+        close_time: "14:00",
+      },
+    ]);
+
+    // ❌ gym_facilities → leave empty
+    // ❌ gym_photos → leave empty
+    // ❌ gym_membership_plans → leave empty
+
+    // -------------------------------
+    // 7. Final response
     // -------------------------------
     return res.json({
       success: true,
-      message: "Gym created",
+      message: "Gym created & initialized successfully",
+      gym_id: gym.id,
     });
   } catch (err) {
     console.error("createGym error:", err);

@@ -2,6 +2,7 @@ import { supabase } from "../config/supabase.js";
 import { createPayment } from "./payment.service.js";
 
 export const createMember = async (gym_id, data) => {
+  console.log(data);
   const payload = {
     full_name: data.full_name,
     phone: data.phone,
@@ -9,6 +10,7 @@ export const createMember = async (gym_id, data) => {
     membership_price: data.membership_price,
     membership_start: data.membership_start,
     membership_end: data.membership_end,
+    image_url: data.image_url,
   };
   const { data: member, error } = await supabase
     .from("members")
@@ -53,9 +55,18 @@ export const getMemberById = async (gym_id, id) => {
 };
 
 export const updateMember = async (gym_id, id, updates) => {
+  const payload = {
+    full_name: updates.full_name,
+    phone: updates.phone,
+    membership_type: updates.membership_type,
+    membership_price: updates.membership_price,
+    membership_start: updates.membership_start,
+    membership_end: updates.membership_end,
+    image_url: updates.image_url,
+  };
   const { data, error } = await supabase
     .from("members")
-    .update(updates)
+    .update(payload)
     .eq("gym_id", gym_id)
     .eq("id", id)
     .select()
